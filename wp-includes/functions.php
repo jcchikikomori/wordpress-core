@@ -219,10 +219,12 @@ function wp_maybe_decline_date( $date ) {
 	 * translate this to 'on'. Do not translate into your own language.
 	 */
 	if ( 'on' === _x( 'off', 'decline months names: on or off' ) ) {
+
+		$months          = $wp_locale->month;
+		$months_genitive = $wp_locale->month_genitive;
+
 		// Match a format like 'j F Y' or 'j. F'
 		if ( @preg_match( '#^\d{1,2}\.? [^\d ]+#u', $date ) ) {
-			$months          = $wp_locale->month;
-			$months_genitive = $wp_locale->month_genitive;
 
 			foreach ( $months as $key => $month ) {
 				$months[ $key ] = '# ' . $month . '( |$)#u';
@@ -230,6 +232,19 @@ function wp_maybe_decline_date( $date ) {
 
 			foreach ( $months_genitive as $key => $month ) {
 				$months_genitive[ $key ] = ' ' . $month . '$1';
+			}
+
+			$date = preg_replace( $months, $months_genitive, $date );
+		}
+
+		// Match a format like 'F jS' or 'F j' and change it to 'j F'
+		if ( @preg_match( '#^[^\d ]+ \d{1,2}(st|nd|rd|th)? #u', trim( $date ) ) ) {
+			foreach ( $months as $key => $month ) {
+				$months[ $key ] = '#' . $month . ' (\d{1,2})(st|nd|rd|th)?#u';
+			}
+
+			foreach ( $months_genitive as $key => $month ) {
+				$months_genitive[ $key ] = '$1 ' . $month;
 			}
 
 			$date = preg_replace( $months, $months_genitive, $date );
@@ -3177,7 +3192,7 @@ function _default_wp_die_handler( $message, $title = '', $args = array() ) {
 			display: inline-block;
 			text-decoration: none;
 			font-size: 13px;
-			line-height: 26px;
+			line-height: 2;
 			height: 28px;
 			margin: 0;
 			padding: 0 10px 1px;
@@ -3197,7 +3212,7 @@ function _default_wp_die_handler( $message, $title = '', $args = array() ) {
 
 		.button.button-large {
 			height: 30px;
-			line-height: 28px;
+			line-height: 2.15384615;
 			padding: 0 12px 2px;
 		}
 
