@@ -7,7 +7,7 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( dirname( __FILE__ ) . '/admin.php' );
+require_once __DIR__ . '/admin.php';
 
 if ( ! $taxnow ) {
 	wp_die( __( 'Invalid taxonomy.' ) );
@@ -19,7 +19,7 @@ if ( ! $tax ) {
 	wp_die( __( 'Invalid taxonomy.' ) );
 }
 
-if ( ! in_array( $tax->name, get_taxonomies( array( 'show_ui' => true ) ) ) ) {
+if ( ! in_array( $tax->name, get_taxonomies( array( 'show_ui' => true ) ), true ) ) {
 	wp_die( __( 'Sorry, you are not allowed to edit terms in this taxonomy.' ) );
 }
 
@@ -204,7 +204,7 @@ switch ( $wp_list_table->current_action() ) {
 		$tags   = (array) $_REQUEST['delete_tags'];
 
 		/** This action is documented in wp-admin/edit.php */
-		$location = apply_filters( "handle_bulk_actions-{$screen}", $location, $wp_list_table->current_action(), $tags );  // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		$location = apply_filters( "handle_bulk_actions-{$screen}", $location, $wp_list_table->current_action(), $tags ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 		break;
 }
 
@@ -318,10 +318,10 @@ if ( 'category' === $taxonomy || 'link_category' === $taxonomy || 'post_tag' ===
 	unset( $help );
 }
 
-require_once( ABSPATH . 'wp-admin/admin-header.php' );
+require_once ABSPATH . 'wp-admin/admin-header.php';
 
 /** Also used by the Edit Tag  form */
-require_once( ABSPATH . 'wp-admin/includes/edit-tag-messages.php' );
+require_once ABSPATH . 'wp-admin/includes/edit-tag-messages.php';
 
 $class = ( isset( $_REQUEST['error'] ) ) ? 'error' : 'updated';
 
@@ -338,8 +338,13 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 
 <?php
 if ( isset( $_REQUEST['s'] ) && strlen( $_REQUEST['s'] ) ) {
-	/* translators: %s: Search query. */
-	printf( '<span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', esc_html( wp_unslash( $_REQUEST['s'] ) ) );
+	echo '<span class="subtitle">';
+	printf(
+		/* translators: %s: Search query. */
+		__( 'Search results for: %s' ),
+		'<strong>' . esc_html( wp_unslash( $_REQUEST['s'] ) ) . '</strong>'
+	);
+	echo '</span>';
 }
 ?>
 
@@ -409,6 +414,11 @@ if ( $can_edit_terms ) {
 	 *
 	 * The dynamic portion of the hook name, `$taxonomy`, refers to the taxonomy slug.
 	 *
+	 * Possible hook names include:
+	 *
+	 *  - `category_pre_add_form`
+	 *  - `post_tag_pre_add_form`
+	 *
 	 * @since 3.0.0
 	 *
 	 * @param string $taxonomy The taxonomy slug.
@@ -424,6 +434,11 @@ if ( $can_edit_terms ) {
 	 * Fires inside the Add Tag form tag.
 	 *
 	 * The dynamic portion of the hook name, `$taxonomy`, refers to the taxonomy slug.
+	 *
+	 * Possible hook names include:
+	 *
+	 *  - `category_term_new_form_tag`
+	 *  - `post_tag_term_new_form_tag`
 	 *
 	 * @since 3.7.0
 	 */
@@ -517,6 +532,11 @@ if ( $can_edit_terms ) {
 	 *
 	 * The dynamic portion of the hook name, `$taxonomy`, refers to the taxonomy slug.
 	 *
+	 * Possible hook names include:
+	 *
+	 *  - `category_add_form_fields`
+	 *  - `post_tag_add_form_fields`
+	 *
 	 * @since 3.0.0
 	 *
 	 * @param string $taxonomy The taxonomy slug.
@@ -564,6 +584,11 @@ if ( $can_edit_terms ) {
 	 * Fires at the end of the Add Term form for all taxonomies.
 	 *
 	 * The dynamic portion of the hook name, `$taxonomy`, refers to the taxonomy slug.
+	 *
+	 * Possible hook names include:
+	 *
+	 *  - `category_add_form`
+	 *  - `post_tag_add_form`
 	 *
 	 * @since 3.0.0
 	 *
@@ -633,6 +658,11 @@ endif;
  *
  * The dynamic portion of the hook name, `$taxonomy`, refers to the taxonomy slug.
  *
+ * Possible hook names include:
+ *
+ *  - `after-category-table`
+ *  - `after-post_tag-table`
+ *
  * @since 3.0.0
  *
  * @param string $taxonomy The taxonomy name.
@@ -658,4 +688,4 @@ endif;
 
 $wp_list_table->inline_edit();
 
-include( ABSPATH . 'wp-admin/admin-footer.php' );
+require_once ABSPATH . 'wp-admin/admin-footer.php';

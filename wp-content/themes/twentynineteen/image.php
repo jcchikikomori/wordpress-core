@@ -14,7 +14,7 @@ get_header();
 		<main id="main" class="site-main">
 
 			<?php
-				// Start the loop.
+			// Start the Loop.
 			while ( have_posts() ) :
 				the_post();
 				?>
@@ -30,7 +30,7 @@ get_header();
 						<figure class="entry-attachment wp-block-image">
 						<?php
 							/**
-							 * Filter the default twentynineteen image attachment size.
+							 * Filters the default twentynineteen image attachment size.
 							 *
 							 * @since Twenty Sixteen 1.0
 							 *

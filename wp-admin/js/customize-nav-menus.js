@@ -95,7 +95,7 @@
 	 * @since 4.7.0
 	 * @alias wp.customize.Menus.insertAutoDraftPost
 	 *
-	 * @param {object} params - Parameters for the draft post to create.
+	 * @param {Object} params - Parameters for the draft post to create.
 	 * @param {string} params.post_type - Post type to add.
 	 * @param {string} params.post_title - Post title to use.
 	 * @return {jQuery.promise} Promise resolved with the added post.
@@ -203,9 +203,11 @@
 
 			_.bindAll( this, 'close' );
 
-			// If the available menu items panel is open and the customize controls are
-			// interacted with (other than an item being deleted), then close the
-			// available menu items panel. Also close on back button click.
+			/*
+			 * If the available menu items panel is open and the customize controls
+			 * are interacted with (other than an item being deleted), then close
+			 * the available menu items panel. Also close on back button click.
+			 */
 			$( '#customize-controls, .customize-section-back' ).on( 'click keydown', function( e ) {
 				var isDeleteBtn = $( e.target ).is( '.item-delete, .item-delete *' ),
 					isAddNewBtn = $( e.target ).is( '.add-new-menu-item, .add-new-menu-item *' );
@@ -214,9 +216,9 @@
 				}
 			} );
 
-			// Clear the search results and trigger a `keyup` event to fire a new search.
+			// Clear the search results and trigger an `input` event to fire a new search.
 			this.$clearResults.on( 'click', function() {
-				self.$search.val( '' ).focus().trigger( 'keyup' );
+				self.$search.val( '' ).trigger( 'focus' ).trigger( 'input' );
 			} );
 
 			this.$el.on( 'input', '#custom-menu-item-name.invalid, #custom-menu-item-url.invalid', function() {
@@ -224,7 +226,7 @@
 			});
 
 			// Load available items if it looks like we'll need them.
-			api.panel( 'nav_menus' ).container.bind( 'expanded', function() {
+			api.panel( 'nav_menus' ).container.on( 'expanded', function() {
 				if ( ! self.rendered ) {
 					self.initList();
 					self.rendered = true;
@@ -232,7 +234,7 @@
 			});
 
 			// Load more items.
-			this.sectionContent.scroll( function() {
+			this.sectionContent.on( 'scroll', function() {
 				var totalHeight = self.$el.find( '.accordion-section.open .available-menu-items-list' ).prop( 'scrollHeight' ),
 					visibleHeight = self.$el.find( '.accordion-section.open' ).height();
 
@@ -252,7 +254,7 @@
 				}
 			});
 
-			// Close the panel if the URL in the preview changes
+			// Close the panel if the URL in the preview changes.
 			api.previewer.bind( 'url', this.close );
 
 			self.delegateEvents();
@@ -385,7 +387,7 @@
 		 * @since 4.7.0 Changed function signature to take list of item types instead of single type/object.
 		 * @access private
 		 *
-		 * @param {Array.<object>} itemTypes List of objects containing type and key.
+		 * @param {Array.<Object>} itemTypes List of objects containing type and key.
 		 * @param {string} deprecated Formerly the object parameter.
 		 * @return {void}
 		 */
@@ -444,7 +446,7 @@
 						self.pages[ name ] = -1;
 						return;
 					} else if ( ( 'post_type:page' === name ) && ( ! availableMenuItemContainers[ name ].hasClass( 'open' ) ) ) {
-						availableMenuItemContainers[ name ].find( '.accordion-section-title > button' ).click();
+						availableMenuItemContainers[ name ].find( '.accordion-section-title > button' ).trigger( 'click' );
 					}
 					typeItems = new api.Menus.AvailableItemCollection( typeItems ); // @todo Why is this collection created and then thrown away?
 					self.collection.add( typeItems.models );
@@ -496,7 +498,7 @@
 
 		// Submit handler for keypress and click on menu item.
 		_submit: function( event ) {
-			// Only proceed with keypress if it is Enter or Spacebar
+			// Only proceed with keypress if it is Enter or Spacebar.
 			if ( 'keypress' === event.type && ( 13 !== event.which && 32 !== event.which ) ) {
 				return;
 			}
@@ -642,7 +644,7 @@
 				return;
 			}
 
-			if ( '' === $.trim( itemName.val() ) ) {
+			if ( '' === itemName.val().trim() ) {
 				itemName.addClass( 'invalid' );
 				itemName.focus();
 				return;
@@ -714,10 +716,10 @@
 
 			this.$el.find( '.selected' ).removeClass( 'selected' );
 
-			this.$search.focus();
+			this.$search.trigger( 'focus' );
 		},
 
-		// Closes the panel
+		// Closes the panel.
 		close: function( options ) {
 			options = options || {};
 
@@ -731,7 +733,7 @@
 			$( 'body' ).removeClass( 'adding-menu-items' );
 			$( '#available-menu-items .menu-item-handle.item-added' ).removeClass( 'item-added' );
 
-			this.$search.val( '' ).trigger( 'keyup' );
+			this.$search.val( '' ).trigger( 'input' );
 		},
 
 		// Add a few keyboard enhancements to the panel.
@@ -741,7 +743,7 @@
 				isBackTab = ( 9 === event.which && event.shiftKey ),
 				isSearchFocused = $( event.target ).is( this.$search );
 
-			// If enter pressed but nothing entered, don't do anything
+			// If enter pressed but nothing entered, don't do anything.
 			if ( isEnter && ! this.$search.val() ) {
 				return;
 			}
@@ -781,7 +783,7 @@
 				}
 				event.preventDefault();
 
-				// Hide description
+				// Hide description.
 				if ( content.not( ':hidden' ) ) {
 					content.slideUp( 'fast' );
 					help.attr( 'aria-expanded', 'false' );
@@ -802,7 +804,7 @@
 				return false;
 			} );
 
-			// Help toggle
+			// Help toggle.
 			help.on( 'click keydown', function( event ) {
 				if ( api.utils.isKeydownButNotEnterEvent( event ) ) {
 					return;
@@ -825,7 +827,7 @@
 		 */
 		ready: function() {
 			var panel = this;
-			panel.container.find( '.hide-column-tog' ).click( function() {
+			panel.container.find( '.hide-column-tog' ).on( 'click', function() {
 				panel.saveManageColumnsState();
 			});
 
@@ -903,7 +905,7 @@
 		 *
 		 * @since 4.3.0
 		 *
-		 * @param {String} id
+		 * @param {string} id
 		 * @param {Object} options
 		 */
 		initialize: function( id, options ) {
@@ -1062,7 +1064,7 @@
 				menuAutoAddControl.active.set( true );
 			}
 
-			// Add the control for deleting the menu
+			// Add the control for deleting the menu.
 			menuDeleteControlId = section.id + '[delete]';
 			menuDeleteControl = api.control( menuDeleteControlId );
 			if ( ! menuDeleteControl ) {
@@ -1126,7 +1128,7 @@
 				wpNavMenu.menuList = section.contentContainer;
 				wpNavMenu.targetList = wpNavMenu.menuList;
 
-				// Add attributes needed by wpNavMenu
+				// Add attributes needed by wpNavMenu.
 				$( '#menu-to-edit' ).removeAttr( 'id' );
 				wpNavMenu.menuList.attr( 'id', 'menu-to-edit' ).addClass( 'menu' );
 
@@ -1145,7 +1147,8 @@
 						wpNavMenu.initSortables(); // Depends on menu-to-edit ID being set above.
 						section.deferred.initSortables.resolve( wpNavMenu.menuList ); // Now MenuControl can extend the sortable.
 
-						// @todo Note that wp.customize.reflowPaneContents() is debounced, so this immediate change will show a slight flicker while priorities get updated.
+						// @todo Note that wp.customize.reflowPaneContents() is debounced,
+						// so this immediate change will show a slight flicker while priorities get updated.
 						api.control( 'nav_menu[' + String( section.params.menu_id ) + ']' ).reflowMenuItems();
 					}
 					if ( _.isFunction( completeCallback ) ) {
@@ -1415,7 +1418,7 @@
 					navMenuLocationSetting = api( 'nav_menu_locations[' + checkbox.data( 'location-id' ) + ']' );
 					navMenuLocationSetting.set( menuSection.params.menu_id );
 
-					// Reset state for next new menu
+					// Reset state for next new menu.
 					checkbox.prop( 'checked', false );
 				}
 			} );
@@ -1698,7 +1701,8 @@
 			control.elements.classes = new api.Element( control.container.find( '.edit-menu-item-classes' ) );
 			control.elements.xfn = new api.Element( control.container.find( '.edit-menu-item-xfn' ) );
 			control.elements.description = new api.Element( control.container.find( '.edit-menu-item-description' ) );
-			// @todo allow other elements, added by plugins, to be automatically picked up here; allow additional values to be added to setting array.
+			// @todo Allow other elements, added by plugins, to be automatically picked up here;
+			// allow additional values to be added to setting array.
 
 			_.each( control.elements, function( element, property ) {
 				element.bind(function( value ) {
@@ -1790,8 +1794,12 @@
 			$removeBtn = control.container.find( '.item-delete' );
 
 			$removeBtn.on( 'click', function() {
-				// Find an adjacent element to add focus to when this menu item goes away
-				var addingItems = true, $adjacentFocusTarget, $next, $prev;
+				// Find an adjacent element to add focus to when this menu item goes away.
+				var addingItems = true, $adjacentFocusTarget, $next, $prev,
+					instanceCounter = 0, // Instance count of the menu item deleted.
+					deleteItemOriginalItemId = control.params.original_item_id,
+					addedItems = control.getMenuControl().$sectionContent.find( '.menu-item' ),
+					availableMenuItem;
 
 				if ( ! $( 'body' ).hasClass( 'adding-menu-items' ) ) {
 					addingItems = false;
@@ -1808,10 +1816,43 @@
 					$adjacentFocusTarget = control.container.nextAll( '.customize-control-nav_menu' ).find( '.add-new-menu-item' ).first();
 				}
 
+				/*
+				 * If the menu item deleted is the only of its instance left,
+				 * remove the check icon of this menu item in the right panel.
+				 */
+				_.each( addedItems, function( addedItem ) {
+					var menuItemId, menuItemControl, matches;
+
+					// This is because menu item that's deleted is just hidden.
+					if ( ! $( addedItem ).is( ':visible' ) ) {
+						return;
+					}
+
+					matches = addedItem.getAttribute( 'id' ).match( /^customize-control-nav_menu_item-(-?\d+)$/, '' );
+					if ( ! matches ) {
+						return;
+					}
+
+					menuItemId      = parseInt( matches[1], 10 );
+					menuItemControl = api.control( 'nav_menu_item[' + String( menuItemId ) + ']' );
+
+					// Check for duplicate menu items.
+					if ( menuItemControl && deleteItemOriginalItemId == menuItemControl.params.original_item_id ) {
+						instanceCounter++;
+					}
+				} );
+
+				if ( instanceCounter <= 1 ) {
+					// Revert the check icon to add icon.
+					availableMenuItem = $( '#menu-item-tpl-' + control.params.original_item_id );
+					availableMenuItem.removeClass( 'selected' );
+					availableMenuItem.find( '.menu-item-handle' ).removeClass( 'item-added' );
+				}
+
 				control.container.slideUp( function() {
 					control.setting.set( false );
 					wp.a11y.speak( api.Menus.data.l10n.itemDeleted );
-					$adjacentFocusTarget.focus(); // keyboard accessibility
+					$adjacentFocusTarget.focus(); // Keyboard accessibility.
 				} );
 
 				control.setting.set( false );
@@ -1838,7 +1879,7 @@
 
 			// Ensure that whitespace is trimmed on blur so placeholder can be shown.
 			control.container.find( '.edit-menu-item-title' ).on( 'blur', function() {
-				$( this ).val( $.trim( $( this ).val() ) );
+				$( this ).val( $( this ).val().trim() );
 			} );
 
 			titleEl = control.container.find( '.menu-item-title' );
@@ -1847,7 +1888,8 @@
 				if ( ! item ) {
 					return;
 				}
-				trimmedTitle = $.trim( item.title );
+				item.title = item.title || '';
+				trimmedTitle = item.title.trim();
 
 				titleText = trimmedTitle || item.original_title || api.Menus.data.l10n.untitled;
 
@@ -2171,7 +2213,7 @@
 		 *
 		 * @private
 		 *
-		 * @param {Number} offset 1|-1
+		 * @param {number} offset 1|-1
 		 */
 		_changePosition: function( offset ) {
 			var control = this,
@@ -2231,7 +2273,7 @@
 		 *
 		 * @private
 		 *
-		 * @param {Number} offset 1|-1
+		 * @param {number} offset 1|-1
 		 */
 		_changeDepth: function( offset ) {
 			if ( 1 !== offset && -1 !== offset ) {
@@ -2614,7 +2656,7 @@
 		 * Notice that the UI aspects here are handled by wpNavMenu.initSortables()
 		 * which is called in MenuSection.onChangeExpanded()
 		 *
-		 * @param {object} menuList - The element that has sortable().
+		 * @param {Object} menuList - The element that has sortable().
 		 */
 		_setupSortable: function( menuList ) {
 			var control = this;
@@ -2778,13 +2820,13 @@
 					action = sectionTitle.find( '.customize-action' ),
 					name = displayNavMenuName( menu.name );
 
-				// Update the control title
+				// Update the control title.
 				controlTitle.text( name );
 				if ( location.length ) {
 					location.appendTo( controlTitle );
 				}
 
-				// Update the section title
+				// Update the section title.
 				sectionTitle.text( name );
 				if ( action.length ) {
 					action.prependTo( sectionTitle );
@@ -2813,7 +2855,7 @@
 		/**
 		 * Enable/disable the reordering UI
 		 *
-		 * @param {Boolean} showOrHide to enable/disable reordering
+		 * @param {boolean} showOrHide to enable/disable reordering
 		 */
 		toggleReordering: function( showOrHide ) {
 			var addNewItemBtn = this.container.find( '.add-new-menu-item' ),
@@ -2953,11 +2995,12 @@
 		/**
 		 * Add a new item to this menu.
 		 *
-		 * @param {object} item - Value for the nav_menu_item setting to be created.
+		 * @param {Object} item - Value for the nav_menu_item setting to be created.
 		 * @return {wp.customize.Menus.controlConstructor.nav_menu_item} The newly-created nav_menu_item control instance.
 		 */
 		addItemToMenu: function( item ) {
-			var menuControl = this, customizeId, settingArgs, setting, menuItemControl, placeholderId, position = 0, priority = 10;
+			var menuControl = this, customizeId, settingArgs, setting, menuItemControl, placeholderId, position = 0, priority = 10,
+				originalItemId = item.id || '';
 
 			_.each( menuControl.getMenuItemControls(), function( control ) {
 				if ( false === control.setting() ) {
@@ -2981,7 +3024,7 @@
 					position: position
 				}
 			);
-			delete item.id; // only used by Backbone
+			delete item.id; // Only used by Backbone.
 
 			placeholderId = api.Menus.generatePlaceholderAutoIncrementId();
 			customizeId = 'nav_menu_item[' + String( placeholderId ) + ']';
@@ -3001,7 +3044,8 @@
 				settings: {
 					'default': customizeId
 				},
-				menu_item_id: placeholderId
+				menu_item_id: placeholderId,
+				original_item_id: originalItemId
 			} );
 
 			api.control.add( menuItemControl );
@@ -3092,9 +3136,9 @@
 	 *
 	 * @alias wp.customize.Menus.applySavedData
 	 *
-	 * @param {object} data
-	 * @param {array} data.nav_menu_updates
-	 * @param {array} data.nav_menu_item_updates
+	 * @param {Object} data
+	 * @param {Array} data.nav_menu_updates
+	 * @param {Array} data.nav_menu_item_updates
 	 */
 	api.Menus.applySavedData = function( data ) {
 
@@ -3351,7 +3395,7 @@
 	 * @alias wp.customize.Menus.getMenuItemControl
 	 *
 	 * @param {string} menuItemId
-	 * @return {object|null}
+	 * @return {Object|null}
 	 */
 	api.Menus.getMenuItemControl = function( menuItemId ) {
 		return api.control( menuItemIdToSettingId( menuItemId ) );
@@ -3360,7 +3404,7 @@
 	/**
 	 * @alias wp.customize.Menus~menuItemIdToSettingId
 	 *
-	 * @param {String} menuItemId
+	 * @param {string} menuItemId
 	 */
 	function menuItemIdToSettingId( menuItemId ) {
 		return 'nav_menu_item[' + menuItemId + ']';
@@ -3378,7 +3422,7 @@
 	function displayNavMenuName( name ) {
 		name = name || '';
 		name = wp.sanitize.stripTagsAndEncodeText( name ); // Remove any potential tags from name.
-		name = $.trim( name );
+		name = name.toString().trim();
 		return name || api.Menus.data.l10n.unnamed;
 	}
 

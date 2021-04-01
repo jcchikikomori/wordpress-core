@@ -102,8 +102,8 @@
 	 */
 	api.Preview = api.Messenger.extend(/** @lends wp.customize.Preview.prototype */{
 		/**
-		 * @param {object} params  - Parameters to configure the messenger.
-		 * @param {object} options - Extend any instance parameter or method with this object.
+		 * @param {Object} params  - Parameters to configure the messenger.
+		 * @param {Object} options - Extend any instance parameter or method with this object.
 		 */
 		initialize: function( params, options ) {
 			var preview = this, urlParser = document.createElement( 'a' );
@@ -232,8 +232,8 @@
 	 *
 	 * @since 4.7.0
 	 * @access protected
-	 *
 	 * @access private
+	 *
 	 * @return {void}
 	 */
 	api.addLinkPreviewing = function addLinkPreviewing() {
@@ -276,8 +276,8 @@
 	 * @param {string} element.search Query string.
 	 * @param {string} element.pathname Path.
 	 * @param {string} element.host Host.
-	 * @param {object} [options]
-	 * @param {object} [options.allowAdminAjax=false] Allow admin-ajax.php requests.
+	 * @param {Object} [options]
+	 * @param {Object} [options.allowAdminAjax=false] Allow admin-ajax.php requests.
 	 * @return {boolean} Is appropriate for changeset link.
 	 */
 	api.isLinkPreviewable = function isLinkPreviewable( element, options ) {
@@ -337,7 +337,7 @@
 	api.prepareLinkPreview = function prepareLinkPreview( element ) {
 		var queryParams, $element = $( element );
 
-        // Skip elements with no href attribute. Check first to avoid more expensive checks down the road
+        // Skip elements with no href attribute. Check first to avoid more expensive checks down the road.
         if ( ! element.hasAttribute( 'href' ) ) {
             return;
         }
@@ -357,7 +357,7 @@
 			element.protocol = 'https:';
 		}
 
-		// Ignore links with class wp-playlist-caption
+		// Ignore links with class wp-playlist-caption.
 		if ( $element.hasClass( 'wp-playlist-caption' ) ) {
 			return;
 		}
@@ -399,10 +399,10 @@
 		/**
 		 * Rewrite Ajax requests to inject customizer state.
 		 *
-		 * @param {object} options Options.
+		 * @param {Object} options Options.
 		 * @param {string} options.type Type.
 		 * @param {string} options.url URL.
-		 * @param {object} originalOptions Original options.
+		 * @param {Object} originalOptions Original options.
 		 * @param {XMLHttpRequest} xhr XHR.
 		 * @return {void}
 		 */

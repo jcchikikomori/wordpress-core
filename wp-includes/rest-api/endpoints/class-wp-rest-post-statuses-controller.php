@@ -89,7 +89,12 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller {
 					return true;
 				}
 			}
-			return new WP_Error( 'rest_cannot_view', __( 'Sorry, you are not allowed to manage post statuses.' ), array( 'status' => rest_authorization_required_code() ) );
+
+			return new WP_Error(
+				'rest_cannot_view',
+				__( 'Sorry, you are not allowed to manage post statuses.' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
 		}
 
 		return true;
@@ -134,13 +139,21 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller {
 		$status = get_post_status_object( $request['status'] );
 
 		if ( empty( $status ) ) {
-			return new WP_Error( 'rest_status_invalid', __( 'Invalid status.' ), array( 'status' => 404 ) );
+			return new WP_Error(
+				'rest_status_invalid',
+				__( 'Invalid status.' ),
+				array( 'status' => 404 )
+			);
 		}
 
 		$check = $this->check_read_permission( $status );
 
 		if ( ! $check ) {
-			return new WP_Error( 'rest_cannot_read_status', __( 'Cannot view status.' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error(
+				'rest_cannot_read_status',
+				__( 'Cannot view status.' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
 		}
 
 		return true;
@@ -184,7 +197,11 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller {
 		$obj = get_post_status_object( $request['status'] );
 
 		if ( empty( $obj ) ) {
-			return new WP_Error( 'rest_status_invalid', __( 'Invalid status.' ), array( 'status' => 404 ) );
+			return new WP_Error(
+				'rest_status_invalid',
+				__( 'Invalid status.' ),
+				array( 'status' => 404 )
+			);
 		}
 
 		$data = $this->prepare_item_for_response( $obj, $request );
@@ -251,14 +268,14 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller {
 		}
 
 		/**
-		 * Filters a status returned from the REST API.
+		 * Filters a post status returned from the REST API.
 		 *
 		 * Allows modification of the status data right before it is returned.
 		 *
 		 * @since 4.7.0
 		 *
 		 * @param WP_REST_Response $response The response object.
-		 * @param object           $status   The original status object.
+		 * @param object           $status   The original post status object.
 		 * @param WP_REST_Request  $request  Request used to generate the response.
 		 */
 		return apply_filters( 'rest_prepare_status', $response, $status, $request );
@@ -333,6 +350,7 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller {
 		);
 
 		$this->schema = $schema;
+
 		return $this->add_additional_fields_schema( $this->schema );
 	}
 
